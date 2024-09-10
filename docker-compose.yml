@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
     workflows-service:
         build:
@@ -25,7 +23,7 @@ services:
         depends_on: # This instructs Docker Compose to start the "workflows-db" container before starting the "workflows-service" container
             - workflows-db
     workflows-db:
-        image: postgres:13.2-alpine
+        image: postgres:16.4-alpine
         environment: # We need to make sure these environment variables match the ones we specified in the "workflows-service" service
             - POSTGRES_USER=postgres
             - POSTGRES_PASSWORD=postgres
@@ -55,7 +53,7 @@ services:
             - virtual-facility-db
             - workflows-service
     virtual-facility-db:
-        image: postgres:13.2-alpine
+        image: postgres:16.4-alpine
         environment:
             - POSTGRES_USER=postgres
             - POSTGRES_PASSWORD=postgres

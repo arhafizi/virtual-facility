@@ -8,16 +8,15 @@ import {
     Delete,
 } from '@nestjs/common';
 import { WorkflowsService } from './workflows.service';
-import { CreateWorkflowDto } from './dto/create-workflow.dto';
-import { UpdateWorkflowDto } from './dto/update-workflow.dto';
+import { CreateWorkflowDto, UpdateWorkflowDto } from '@app/workflows';
 
 @Controller('workflows')
 export class WorkflowsController {
     constructor(private readonly workflowsService: WorkflowsService) {}
 
     @Post()
-    create(@Body() createWorkflowDto: CreateWorkflowDto) {
-        return this.workflowsService.create(createWorkflowDto);
+    create(@Body() dto: CreateWorkflowDto) {
+        return this.workflowsService.create(dto);
     }
 
     @Get()
@@ -31,11 +30,8 @@ export class WorkflowsController {
     }
 
     @Patch(':id')
-    update(
-        @Param('id') id: string,
-        @Body() updateWorkflowDto: UpdateWorkflowDto,
-    ) {
-        return this.workflowsService.update(+id, updateWorkflowDto);
+    update(@Param('id') id: string, @Body() dto: UpdateWorkflowDto) {
+        return this.workflowsService.update(+id, dto);
     }
 
     @Delete(':id')

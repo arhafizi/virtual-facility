@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { WorkflowsServiceModule } from '../src/wf-service.module';
+import { WorkflowsServiceModule } from '../src/app.module';
 
 describe('WorkflowsServiceController (e2e)', () => {
     let app: INestApplication;
