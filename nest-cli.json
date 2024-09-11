@@ -36,6 +36,24 @@
       "compilerOptions": {
         "tsConfigPath": "libs/workflows/tsconfig.lib.json"
       }
+    },
+    "alarm-service": {
+      "type": "application",
+      "root": "apps/alarm-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/alarm-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/alarm-service/tsconfig.app.json"
+      }
+    },
+    "alarms-generator": {
+      "type": "application",
+      "root": "apps/alarms-generator",
+      "entryFile": "main",
+      "sourceRoot": "apps/alarms-generator/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/alarms-generator/tsconfig.app.json"
+      }
     }
   }
 }

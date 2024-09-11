@@ -24,6 +24,8 @@ services:
         depends_on: # This instructs Docker Compose to start the "workflows-db" container before starting the "workflows-service" container
             - workflows-db
             - nats
+        #deploy:
+        #    replicas: 3 # This instructs Docker Compose to start 3 instances of the "workflows-service" container
     workflows-db:
         image: postgres:16.4-alpine
         environment: # We need to make sure these environment variables match the ones we specified in the "workflows-service" service
@@ -64,3 +66,38 @@ services:
             - POSTGRES_DB=virtual-facility
     nats:
         image: nats:2.10.20-alpine
+
+    alarms-service:
+        build:
+            context: .
+            dockerfile: ./Dockerfile
+            args:
+                - APP_NAME=alarm-service
+        command: npm run start:dev -- alarm-service
+        environment:
+            - NATS_URL=nats://nats:4222
+        volumes:
+            - ./libs:/usr/src/app/libs
+            - ./package.json:/usr/src/app/package.json
+            - ./tsconfig.json:/usr/src/app/tsconfig.json
+            # Note: This is usually not a good practice to mount the "node_modules" directory on the host to the container       # We are doing this for the sake of simplicity in this example       - ./node_modules:/usr/src/app/node_modules
+            - ./apps/alarm-service:/usr/src/app/apps/alarms-service
+        depends_on:
+            - nats
+    alarms-generator:
+        build:
+            context: .
+            dockerfile: ./Dockerfile
+            args:
+                - APP_NAME=alarms-generator
+        command: npm run start:dev -- alarms-generator
+        environment:
+            - NATS_URL=nats://nats:4222
+        volumes:
+            - ./libs:/usr/src/app/libs
+            - ./package.json:/usr/src/app/package.json
+            - ./tsconfig.json:/usr/src/app/tsconfig.json
+            # Note: This is usually not a good practice to mount the "node_modules" directory on the host to the container       # We are doing this for the sake of simplicity in this example       - ./node_modules:/usr/src/app/node_modules
+            - ./apps/alarms-generator:/usr/src/app/apps/alarms-generator
+        depends_on:
+            - nats
