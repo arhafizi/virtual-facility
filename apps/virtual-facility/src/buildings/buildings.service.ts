@@ -61,13 +61,19 @@ export class BuildingsService {
     }
 
     async createWorkflow(buildingId: number) {
-        const newWorkflow = await lastValueFrom(
-            this.workflowsService.send('workflows.create', {
-                name: 'My Workflow',
-                buildingId,
-            } as CreateWorkflowDto),
-        );
-        console.log({ newWorkflow });
+
+        let newWorkflow = null;
+        try {
+            newWorkflow = await lastValueFrom(
+                this.workflowsService.send('workflows.create', {
+                    name: 'My Workflow',
+                    buildingId,
+                } as CreateWorkflowDto),
+            );
+            console.log('workflows.create message sent with data ');
+        } catch (error) {
+            console.log(error);
+        }
         return newWorkflow;
     }
 }

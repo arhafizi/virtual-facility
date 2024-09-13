@@ -30,6 +30,7 @@ export class WorkflowsService {
             ...dto,
         });
         const newWorkflowEntity = await this.workflowsRepo.save(workflow);
+        console.log('Created WorkFlow ::: ', newWorkflowEntity);
         return newWorkflowEntity;
     }
 
