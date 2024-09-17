@@ -3,9 +3,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { BuildingsModule } from './buildings/buildings.module';
 import { HealthModule } from './health/health.module';
+import { OutboxModule } from './outbox/outbox.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
     imports: [
+        ScheduleModule.forRoot(),
         TypeOrmModule.forRoot({
             type: 'postgres',
             host: process.env.POSTGRES_HOST,
@@ -18,8 +21,8 @@ import { HealthModule } from './health/health.module';
         }),
         BuildingsModule,
         HealthModule,
+        OutboxModule,
     ],
     controllers: [AppController],
-    providers: [],
 })
 export class AppModule {}
