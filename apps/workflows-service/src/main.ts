@@ -13,6 +13,7 @@ async function bootstrap() {
             options: {
                 urls: [process.env.RMQ_URL],
                 queue: 'workflows-service',
+                noAck: false,
             },
         },
         { inheritAppConfig: true },

@@ -5,10 +5,11 @@ import { DataSource, Repository } from 'typeorm';
 import { CreateBuildingDto } from './dto/create-building.dto';
 import { UpdateBuildingDto } from './dto/update-building.dto';
 import { Building } from './entities/building.entity';
-import { ClientProxy } from '@nestjs/microservices';
+import { ClientProxy, RmqRecordBuilder } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { Outbox } from '../outbox/entities/outbox.entity';
 import { WORKFLOWS_SERVICE } from './constants';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class BuildingsService {
@@ -46,7 +47,7 @@ export class BuildingsService {
                 ...createBuildingDto,
             });
             const newBuildingEntity = await buildingsRepository.save(building);
-
+            const messageId = randomUUID();
             await outboxRepository.save({
                 type: 'workflows.create',
                 payload: {
@@ -55,7 +56,7 @@ export class BuildingsService {
                 },
                 target: WORKFLOWS_SERVICE.description,
             });
-
+            await this.createWorkflow(building.id, messageId);
             await queryRunner.commitTransaction();
 
             return newBuildingEntity;
@@ -87,14 +88,38 @@ export class BuildingsService {
         return this.buildingsRepo.remove(building);
     }
 
-    async createWorkflow(buildingId: number) {
+    async createWorkflow0(buildingId: number) {
         const newWorkflow = await lastValueFrom(
             this.workflowsService.send('workflows.create', {
                 name: 'My Workflow',
                 buildingId,
             } as CreateWorkflowDto),
         );
-        console.log({ newWorkflow });
         return newWorkflow;
     }
+    
+    async createWorkflow(buildingId: number, messageId: string) {
+        console.log('Sending workflow with messageId:', messageId);
+
+        const workflowPayload = {
+            name: 'My Workflow',
+            buildingId,
+        };
+
+        const record = new RmqRecordBuilder(workflowPayload)
+            .setOptions({
+                headers: {
+                    messageId,
+                },
+            })
+            .build();
+
+        const newWorkflow = await lastValueFrom(
+            this.workflowsService.send('workflows.create', record),
+        );
+
+        return newWorkflow;
+    }
+
+    
 }
