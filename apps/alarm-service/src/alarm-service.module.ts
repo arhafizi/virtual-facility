@@ -1,18 +1,14 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AlarmsServiceController } from './alarm-service.controller';
-import { NATS_MESSAGE_BROKER, NOTIFICATIONS_SERVICE } from './constants';
+import { NOTIFICATIONS_SERVICE } from './constants';
+import { TracingModule } from '@app/tracing';
+import { NatsClientModule } from '@app/tracing/nats-client/nats-client.module';
 
 @Module({
     imports: [
+        NatsClientModule,
         ClientsModule.register([
-            {
-                name: NATS_MESSAGE_BROKER,
-                transport: Transport.NATS,
-                options: {
-                    servers: [process.env.NATS_URL],
-                },
-            },
             {
                 name: NOTIFICATIONS_SERVICE,
                 transport: Transport.RMQ,
@@ -22,6 +18,7 @@ import { NATS_MESSAGE_BROKER, NOTIFICATIONS_SERVICE } from './constants';
                 },
             },
         ]),
+        TracingModule,
     ],
     controllers: [AlarmsServiceController],
 })
